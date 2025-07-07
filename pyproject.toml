@@ -3,5 +3,10 @@ name = "rpy-zero-dashcam"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "==3.11"
-dependencies = []
+requires-python = ">=3.11"
+dependencies = [
+    "picamera2>=0.3.27",
+    "PyYAML>=6.0",
+    "RPi.GPIO>=0.7.1",
+    "psutil>=5.9.0",
+]

@@ -1,0 +1,26 @@
+# Dashcam Configuration
+recording:
+  chunk_duration_minutes: 30  # Duration of each video chunk in minutes
+  video_quality: 1920x1080   # Video resolution
+  bitrate: 10000000          # Video bitrate (10 Mbps)
+  
+storage:
+  max_storage_gb: 32           # Maximum storage to use in GB
+  emergency_files_keep: 5      # Number of recent files to never delete
+  
+gpio:
+  status_led_pin: 18          # GPIO pin for status LED
+  
+logging:
+  level: "INFO"               # Logging level: DEBUG, INFO, WARNING, ERROR
+  max_log_files: 10          # Maximum number of log files to keep
+  log_file_size_mb: 10       # Maximum size of each log file in MB
+  
+system:
+  watchdog_timeout: 30       # Watchdog timeout in seconds
+  health_check_interval: 60  # Health check interval in seconds
+  
+overlay:
+  enable_timestamp: true     # Enable timestamp overlay on video
+  timestamp_format: "%Y-%m-%d %H:%M:%S"  # Timestamp format
+  timestamp_position: "bottom-right"     # Position: top-left, top-right, bottom-left, bottom-right 
