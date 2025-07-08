@@ -494,6 +494,9 @@ class DashcamSystem:
             self._watchdog_timeout
         )
         
+        # Update logging location to USB if available
+        self._update_logging_location()
+        
         # Setup signal handlers
         signal.signal(signal.SIGTERM, self._signal_handler)
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -502,12 +505,8 @@ class DashcamSystem:
         """Setup logging system"""
         log_level = getattr(logging, self.config.get('logging.level', 'INFO')) # type: ignore
         
-        # Create logs directory on USB if available
-        if self.storage and self.storage.is_usb_available() and self.storage.current_usb_path:
-            log_dir = os.path.join(self.storage.current_usb_path, 'logs')
-        else:
-            log_dir = '/tmp/dashcam_logs'
-        
+        # Initially create logs in temp directory
+        log_dir = '/tmp/dashcam_logs'
         os.makedirs(log_dir, exist_ok=True)
         
         # Configure logging
@@ -524,6 +523,26 @@ class DashcamSystem:
         
         self.logger = logging.getLogger('DashcamSystem')
         self.logger.info("Logging system initialized")
+    
+    def _update_logging_location(self):
+        """Update logging location to USB storage if available"""
+        if self.storage and self.storage.is_usb_available() and self.storage.current_usb_path:
+            try:
+                # Create logs directory on USB
+                usb_log_dir = os.path.join(self.storage.current_usb_path, 'logs')
+                os.makedirs(usb_log_dir, exist_ok=True)
+                
+                # Add new file handler for USB location
+                usb_log_file = os.path.join(usb_log_dir, f'dashcam_{datetime.now().strftime("%Y%m%d")}.log')
+                usb_handler = logging.FileHandler(usb_log_file)
+                usb_handler.setLevel(self.logger.level)
+                formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                usb_handler.setFormatter(formatter)
+                self.logger.addHandler(usb_handler)
+                
+                self.logger.info(f"Added USB logging to: {usb_log_file}")
+            except Exception as e:
+                self.logger.error(f"Failed to setup USB logging: {e}")
     
     def _signal_handler(self, signum, frame):
         """Handle shutdown signals"""
